@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="生活记录">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%234CAF50'/%3E%3Ctext x='50%25' y='50%25' font-size='100' text-anchor='middle' fill='white' font-family='Arial'%3E📝%3C/text%3E%3C/svg%3E">
+    <title>生活记录</title>
+    <script src="network-client.js"></script>
+    <script src="api.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 430px;
+            margin: 0 auto;
+            overflow-x: hidden;
+            padding-bottom: 20px;
+        }
+        
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .container {
+            padding: 20px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #4CAF50;
+        }
+        
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .emoji-btn {
+            font-size: 32px;
+            background: none;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .emoji-btn:hover, .emoji-btn.selected {
+            border-color: #4CAF50;
+            background-color: #f1f8e9;
+            transform: scale(1.05);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 16px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .food-section {
+            margin-top: 16px;
+        }
+        
+        .food-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .food-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .food-input input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .food-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .food-item-text {
+            flex: 1;
+            font-size: 16px;
+        }
+        
+        .food-mood {
+            font-size: 24px;
+        }
+        
+        .remove-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .photo-section {
+            margin-top: 16px;
+        }
+        
+        #photoInput {
+            display: none;
+        }
+        
+        .photo-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        
+        .photo-preview {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .photo-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-photo {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: rgba(244, 67, 54, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .save-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .history-section {
+            margin-top: 40px;
+        }
+        
+        .history-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .history-date {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .history-mood {
+            font-size: 28px;
+        }
+        
+        .history-activity {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .history-foods {
+            margin-bottom: 12px;
+        }
+        
+        .history-food-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .history-photos {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .history-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .history-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .empty-state emoji {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            body {
+                max-width: 375px;
+            }
+            
+            .container {
+                padding: 16px;
+            }
+            
+            .section {
+                padding: 16px;
+            }
+            
+            .emoji-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 10px;
+            }
+            
+            .emoji-btn {
+                font-size: 28px;
+                padding: 10px;
+            }
+        }
+        
+        /* 键盘弹出时的样式 */
+        .keyboard-visible {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>生活记录</h1>
+        <button class="photo-btn" id="calendarBtn" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">打开日历</button>
+    </header>
+    
+    <!-- 日历模态框 -->
+    <div id="calendarModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1000; padding: 20px;">
+        <div style="background-color: white; border-radius: 12px; padding: 20px; max-width: 375px; margin: 50px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="currentMonth" style="font-size: 18px; font-weight: 600; color: #4CAF50;"></h3>
+                <button id="closeCalendar" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+            <div id="calendarDays" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px;"></div>
+            <div id="calendarRecords" style="max-height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 今日记录部分 -->
+        <div class="section">
+            <h2>今日心情</h2>
+            <div class="emoji-grid" id="moodGrid">
+                <button class="emoji-btn" data-emoji="😊">😊</button>
+                <button class="emoji-btn" data-emoji="😃">😃</button>
+                <button class="emoji-btn" data-emoji="😢">😢</button>
+                <button class="emoji-btn" data-emoji="😠">😠</button>
+                <button class="emoji-btn" data-emoji="😴">😴</button>
+                <button class="emoji-btn" data-emoji="😎">😎</button>
+                <button class="emoji-btn" data-emoji="🥰">🥰</button>
+                <button class="emoji-btn" data-emoji="🤔">🤔</button>
+                <button class="emoji-btn" data-emoji="😱">😱</button>
+                <button class="emoji-btn" data-emoji="🤩">🤩</button>
+                <button class="emoji-btn" data-emoji="😌">😌</button>
+                <button class="emoji-btn" data-emoji="😇">😇</button>
+            </div>
+            
+            <h2>做了什么</h2>
+            <textarea id="activityInput" placeholder="今天做了哪些事情..."></textarea>
+            
+            <h2>吃了什么</h2>
+            <div class="food-section">
+                <div class="food-input">
+                    <input type="text" id="foodInput" placeholder="输入食物名称">
+                    <button class="emoji-btn" id="foodMoodBtn" data-emoji="😊">😊</button>
+                    <button class="photo-btn" id="addFoodBtn">添加</button>
+                </div>
+                <div id="foodList"></div>
+            </div>
+            
+            <h2>照片</h2>
+            <div class="photo-section">
+                <input type="file" id="photoInput" accept="image/*" capture="camera" multiple>
+                <button class="photo-btn" onclick="document.getElementById('photoInput').click()">拍照/选择照片</button>
+                <div class="photo-preview" id="photoPreview"></div>
+            </div>
+            
+            <button class="save-btn" id="saveBtn">保存记录</button>
+        </div>
+        
+        <!-- 历史记录部分 -->
+        <div class="section history-section">
+            <h2>历史记录</h2>
+            <div id="historyList"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 全局变量
+        let selectedMood = '😊';
+        let selectedFoodMood = '😊';
+        let foodItems = [];
+        let photoData = [];
+        
+        // 全局变量
+        let currentDate = new Date();
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initMoodSelection();
+            initFoodMoodSelection();
+            initAddFoodBtn();
+            initPhotoInput();
+            initSaveBtn();
+            initCalendar();
+            loadHistory();
+            
+            // 监听键盘事件，防止页面乱飘
+            window.addEventListener('resize', function() {
+                if (window.innerHeight < window.innerWidth) {
+                    document.body.classList.add('keyboard-visible');
+                } else {
+                    document.body.classList.remove('keyboard-visible');
+                }
+            });
+        });
+        
+        // 初始化日历
+        function initCalendar() {
+            const calendarBtn = document.getElementById('calendarBtn');
+            const calendarModal = document.getElementById('calendarModal');
+            const closeCalendar = document.getElementById('closeCalendar');
+            
+            calendarBtn.addEventListener('click', function() {
+                calendarModal.style.display = 'block';
+                renderCalendar();
+            });
+            
+            closeCalendar.addEventListener('click', function() {
+                calendarModal.style.display = 'none';
+            });
+            
+            // 点击模态框外部关闭
+            calendarModal.addEventListener('click', function(e) {
+                if (e.target === calendarModal) {
+                    calendarModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // 渲染日历
+        function renderCalendar() {
+            const currentMonthEl = document.getElementById('currentMonth');
+            const calendarDaysEl = document.getElementById('calendarDays');
+            const calendarRecordsEl = document.getElementById('calendarRecords');
+            
+            // 设置当前月份标题
+            const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            currentMonthEl.textContent = `${currentDate.getFullYear()}年 ${monthNames[currentDate.getMonth()]}`;
+            
+            // 清空日历
+            calendarDaysEl.innerHTML = '';
+            
+            // 添加星期标题
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            weekdays.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.style.fontWeight = '600';
+                dayEl.style.textAlign = 'center';
+                dayEl.style.padding = '8px';
+                dayEl.style.color = '#666';
+                dayEl.textContent = day;
+                calendarDaysEl.appendChild(dayEl);
+            });
+            
+            // 获取当月第一天和最后一天
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            // 生成42天的日历（6周）
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                
+                const dayEl = document.createElement('button');
+                dayEl.style.border = '1px solid #e0e0e0';
+                dayEl.style.borderRadius = '8px';
+                dayEl.style.padding = '12px 8px';
+                dayEl.style.textAlign = 'center';
+                dayEl.style.cursor = 'pointer';
+                dayEl.style.fontSize = '16px';
+                dayEl.style.aspectRatio = '1';
+                dayEl.style.display = 'flex';
+                dayEl.style.alignItems = 'center';
+                dayEl.style.justifyContent = 'center';
+                
+                // 设置日期文本
+                dayEl.textContent = date.getDate();
+                
+                // 标记其他月份的日期
+                if (date.getMonth() !== currentDate.getMonth()) {
+                    dayEl.style.opacity = '0.3';
+                }
+                
+                // 标记今天
+                const today = new Date();
+                if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) {
+                    dayEl.style.backgroundColor = '#4CAF50';
+                    dayEl.style.color = 'white';
+                    dayEl.style.fontWeight = '600';
+                }
+                
+                // 检查是否有记录
+                const hasRecord = checkDateHasRecord(date);
+                if (hasRecord) {
+                    dayEl.style.borderColor = '#4CAF50';
+                    dayEl.style.fontWeight = '600';
+                }
+                
+                // 添加点击事件
+                dayEl.addEventListener('click', function() {
+                    showDateRecords(date);
+                });
+                
+                calendarDaysEl.appendChild(dayEl);
+            }
+            
+            // 默认显示今天的记录
+            showDateRecords(new Date());
+        }
+        
+        // 检查日期是否有记录
+        function checkDateHasRecord(date) {
+            const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+            const dateStr = date.toLocaleDateString('zh-CN');
+            return records.some(record => record.date === dateStr);
+        }
+        
+        // 显示指定日期的记录
+        function showDateRecords(date) {
+            const calendarRecordsEl = document.getElementById('calendarRecords');
+            const dateStr = date.toLocaleDateString('zh-CN');
+            const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+            const dateRecords = records.filter(record => record.date === dateStr);
+            
+            if (dateRecords.length === 0) {
+                calendarRecordsEl.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <p>这一天没有记录</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            calendarRecordsEl.innerHTML = '';
+            
+            dateRecords.forEach(record => {
+                const recordEl = document.createElement('div');
+                recordEl.style.padding = '12px';
+                recordEl.style.borderBottom = '1px solid #e0e0e0';
+                
+                // 渲染食物列表
+                let foodsHtml = '';
+                if (record.foods && record.foods.length > 0) {
+                    foodsHtml = '<div style="margin-top: 8px; font-size: 14px;">';
+                    record.foods.forEach(food => {
+                        foodsHtml += `<div>${food.name} ${food.mood}</div>`;
+                    });
+                    foodsHtml += '</div>';
+                }
+                
+                // 渲染照片
+                let photosHtml = '';
+                if (record.photos && record.photos.length > 0) {
+                    photosHtml = '<div style="margin-top: 8px; display: flex; gap: 8px;">';
+                    record.photos.forEach(photo => {
+                        photosHtml += `<img src="${photo}" style="width: 60px; height: 60px; border-radius: 6px; object-fit: cover;">`;
+                    });
+                    photosHtml += '</div>';
+                }
+                
+                recordEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 14px; color: #666;">${record.time}</div>
+                        <div style="font-size: 20px;">${record.mood}</div>
+                    </div>
+                    ${record.activity ? `<div style="margin-top: 8px; font-size: 14px;">${record.activity}</div>` : ''}
+                    ${foodsHtml}
+                    ${photosHtml}
+                `;
+                
+                calendarRecordsEl.appendChild(recordEl);
+            });
+        }
+        
+        // 初始化心情选择
+        function initMoodSelection() {
+            const moodBtns = document.querySelectorAll('#moodGrid .emoji-btn');
+            moodBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    moodBtns.forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedMood = this.dataset.emoji;
+                });
+            });
+            // 默认选中第一个
+            moodBtns[0].classList.add('selected');
+        }
+        
+        // 初始化食物心情选择
+        function initFoodMoodSelection() {
+            const foodMoodBtn = document.getElementById('foodMoodBtn');
+            const moods = ['😊', '😋', '😐', '😢', '😠'];
+            let currentIndex = 0;
+            
+            foodMoodBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex + 1) % moods.length;
+                selectedFoodMood = moods[currentIndex];
+                this.textContent = selectedFoodMood;
+            });
+        }
+        
+        // 初始化添加食物按钮
+        function initAddFoodBtn() {
+            const addFoodBtn = document.getElementById('addFoodBtn');
+            addFoodBtn.addEventListener('click', function() {
+                const foodInput = document.getElementById('foodInput');
+                const foodName = foodInput.value.trim();
+                
+                if (foodName) {
+                    foodItems.push({ name: foodName, mood: selectedFoodMood });
+                    foodInput.value = '';
+                    renderFoodList();
+                }
+            });
+        }
+        
+        // 渲染食物列表
+        function renderFoodList() {
+            const foodList = document.getElementById('foodList');
+            foodList.innerHTML = '';
+            
+            foodItems.forEach((item, index) => {
+                const foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                foodItem.innerHTML = `
+                    <div class="food-item-text">${item.name}</div>
+                    <div class="food-mood">${item.mood}</div>
+                    <button class="remove-btn" onclick="removeFood(${index})">删除</button>
+                `;
+                foodList.appendChild(foodItem);
+            });
+        }
+        
+        // 删除食物
+        function removeFood(index) {
+            foodItems.splice(index, 1);
+            renderFoodList();
+        }
+        
+        // 初始化照片输入
+        function initPhotoInput() {
+            const photoInput = document.getElementById('photoInput');
+            photoInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            photoData.push(e.target.result);
+                            renderPhotoPreview();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        }
+        
+        // 渲染照片预览
+        function renderPhotoPreview() {
+            const photoPreview = document.getElementById('photoPreview');
+            photoPreview.innerHTML = '';
+            
+            photoData.forEach((data, index) => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                photoItem.innerHTML = `
+                    <img src="${data}" alt="Photo">
+                    <button class="remove-photo" onclick="removePhoto(${index})">×</button>
+                `;
+                photoPreview.appendChild(photoItem);
+            });
+        }
+        
+        // 删除照片
+        function removePhoto(index) {
+            photoData.splice(index, 1);
+            renderPhotoPreview();
+        }
+        
+        // 初始化保存按钮
+        function initSaveBtn() {
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.addEventListener('click', async function() {
+                const activityInput = document.getElementById('activityInput');
+                const activity = activityInput.value.trim();
+                
+                // 创建记录
+                const record = {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString('zh-CN'),
+                    time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                    mood: selectedMood,
+                    activity: activity,
+                    foods: [...foodItems],
+                    photos: [...photoData]
+                };
+                
+                try {
+                    // 保存到服务器
+                    await saveRecord(record);
+                    
+                    // 重置表单
+                    resetForm();
+                    
+                    // 重新加载历史记录
+                    loadHistory();
+                    
+                    // 显示保存成功提示
+                    alert('记录保存成功！');
+                } catch (error) {
+                    console.error('保存记录出错:', error);
+                    alert('保存记录失败，已保存到本地存储');
+                    
+                    // 重置表单
+                    resetForm();
+                    
+                    // 重新加载历史记录
+                    loadHistory();
+                }
+            });
+        }
+        
+        // 保存记录到服务器
+        async function saveRecord(record) {
+            try {
+                // 使用网络 API 保存记录
+                const result = await API.LifeRecord.createRecord(record);
+                console.log('记录保存成功:', result);
+                
+                // 同时保存到本地存储作为备份
+                let records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+                records.unshift(record);
+                localStorage.setItem('lifeRecords', JSON.stringify(records));
+                
+                return result;
+            } catch (error) {
+                console.error('保存记录失败:', error);
+                
+                // 如果网络请求失败，保存到本地存储
+                let records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+                records.unshift(record);
+                localStorage.setItem('lifeRecords', JSON.stringify(records));
+                
+                throw error;
+            }
+        }
+        
+        // 重置表单
+        function resetForm() {
+            // 重置心情选择
+            const moodBtns = document.querySelectorAll('#moodGrid .emoji-btn');
+            moodBtns.forEach(b => b.classList.remove('selected'));
+            moodBtns[0].classList.add('selected');
+            selectedMood = '😊';
+            
+            // 重置活动输入
+            document.getElementById('activityInput').value = '';
+            
+            // 重置食物列表
+            foodItems = [];
+            renderFoodList();
+            
+            // 重置照片
+            photoData = [];
+            renderPhotoPreview();
+            
+            // 重置食物心情
+            selectedFoodMood = '😊';
+            document.getElementById('foodMoodBtn').textContent = '😊';
+        }
+        
+        // 加载历史记录
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+            
+            if (records.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <emoji>📝</emoji>
+                        <p>还没有历史记录</p>
+                        <p>开始记录你的生活吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            historyList.innerHTML = '';
+            
+            records.forEach(record => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                // 渲染食物列表
+                let foodsHtml = '';
+                if (record.foods && record.foods.length > 0) {
+                    foodsHtml = '<div class="history-foods">';
+                    record.foods.forEach(food => {
+                        foodsHtml += `<div class="history-food-item">${food.name} ${food.mood}</div>`;
+                    });
+                    foodsHtml += '</div>';
+                }
+                
+                // 渲染照片
+                let photosHtml = '';
+                if (record.photos && record.photos.length > 0) {
+                    photosHtml = '<div class="history-photos">';
+                    record.photos.forEach(photo => {
+                        photosHtml += `<div class="history-photo"><img src="${photo}" alt="Photo"></div>`;
+                    });
+                    photosHtml += '</div>';
+                }
+                
+                historyItem.innerHTML = `
+                    <div class="history-header">
+                        <div class="history-date">${record.date} ${record.time}</div>
+                        <div class="history-mood">${record.mood}</div>
+                    </div>
+                    ${record.activity ? `<div class="history-activity">${record.activity}</div>` : ''}
+                    ${foodsHtml}
+                    ${photosHtml}
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+    </script>
+</body>
+</html>
