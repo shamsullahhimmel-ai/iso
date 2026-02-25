@@ -1,0 +1,2430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="生活记录">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' font-size='100' text-anchor='middle' fill='white' font-family='Arial'%3E📝%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-startup-image" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2796 1290'%3E%3Crect width='2796' height='1290' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' font-size='200' text-anchor='middle' fill='white' font-family='Arial'%3E📝%3C/text%3E%3C/svg%3E">
+    <title>生活记录</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #ff69b4;
+    --primary-dark: #ff1493;
+    --primary-gradient: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+    
+    --secondary-color: #ffb6c1;
+    --secondary-gradient: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
+    
+    --success-color: #38ef7d;
+    --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    
+    --danger-color: #ff6b6b;
+    --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    
+    --text-primary: #c71585;
+    --text-secondary: #ff69b4;
+    --text-tertiary: #ffb6c1;
+    
+    --bg-color: #fff0f5;
+    --card-bg: rgba(255, 255, 255, 0.98);
+    
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+    
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-bounce: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* 情绪分类色彩方案 */
+    --basic-emotion-color: #dda0dd;
+    --basic-emotion-gradient: linear-gradient(135deg, #dda0dd 0%, #9370db 100%);
+    --basic-emotion-border: rgba(221, 160, 221, 0.6);
+    
+    --positive-emotion-color: #ffb6c1;
+    --positive-emotion-gradient: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
+    --positive-emotion-border: rgba(255, 182, 193, 0.6);
+    
+    --negative-emotion-color: #add8e6;
+    --negative-emotion-gradient: linear-gradient(135deg, #add8e6 0%, #87ceeb 100%);
+    --negative-emotion-border: rgba(173, 216, 230, 0.6);
+    
+    --special-emotion-color: #ffdab9;
+    --special-emotion-gradient: linear-gradient(135deg, #ffdab9 0%, #ffb6c1 100%);
+    --special-emotion-border: rgba(255, 218, 185, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #f0f0f0;
+        --text-secondary: #c0c0c0;
+        --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        --card-bg: rgba(30, 30, 50, 0.95);
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+}
+
+body {
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+}
+
+header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 20px;
+    padding-top: max(env(safe-area-inset-top), 20px);
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 1px;
+}
+
+.container {
+    padding: 12px 20px 20px;
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 105, 180, 0.1) 0%, transparent 70%);
+    transform: rotate(30deg);
+    z-index: 0;
+}
+
+.section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #c71585;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    color: #ff69b4;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.mood-title {
+    transform: translateY(-8px);
+    margin-top: 0;
+}
+
+.date-selector {
+    margin-bottom: 16px;
+}
+
+.date-selector label {
+    display: block;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.date-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
+    color: var(--text-primary);
+    transition: all var(--transition-normal);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.mood-category-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.mood-category-section {
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 18px;
+    padding: 16px;
+    transition: all var(--transition-bounce);
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.mood-category-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    border-radius: 18px 18px 0 0;
+    transition: all var(--transition-normal);
+}
+
+.mood-category-section:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.mood-category-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all var(--transition-normal);
+    position: relative;
+    z-index: 1;
+}
+
+/* 基础情绪 */
+.mood-category-section:nth-child(1) {
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(69, 183, 209, 0.1) 100%);
+    border-color: var(--basic-emotion-border);
+}
+
+.mood-category-section:nth-child(1)::before {
+    background: var(--basic-emotion-gradient);
+}
+
+.mood-category-section:nth-child(1):hover {
+    box-shadow: 0 8px 24px rgba(78, 205, 196, 0.3);
+}
+
+/* 积极情绪 */
+.mood-category-section:nth-child(2) {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 142, 83, 0.1) 100%);
+    border-color: var(--positive-emotion-border);
+}
+
+.mood-category-section:nth-child(2)::before {
+    background: var(--positive-emotion-gradient);
+}
+
+.mood-category-section:nth-child(2):hover {
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+}
+
+/* 消极情绪 */
+.mood-category-section:nth-child(3) {
+    background: linear-gradient(135deg, rgba(150, 206, 180, 0.1) 0%, rgba(254, 202, 87, 0.1) 100%);
+    border-color: var(--negative-emotion-border);
+}
+
+.mood-category-section:nth-child(3)::before {
+    background: var(--negative-emotion-gradient);
+}
+
+.mood-category-section:nth-child(3):hover {
+    box-shadow: 0 8px 24px rgba(150, 206, 180, 0.3);
+}
+
+/* 特殊情绪 */
+.mood-category-section:nth-child(4) {
+    background: linear-gradient(135deg, rgba(221, 160, 221, 0.1) 0%, rgba(147, 112, 219, 0.1) 100%);
+    border-color: var(--special-emotion-border);
+}
+
+.mood-category-section:nth-child(4)::before {
+    background: var(--special-emotion-gradient);
+}
+
+.mood-category-section:nth-child(4):hover {
+    box-shadow: 0 8px 24px rgba(221, 160, 221, 0.3);
+}
+
+.mood-category-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #c71585;
+    text-align: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid rgba(255, 105, 180, 0.35);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+}
+
+.mood-category-emoji-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.emoji-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--transition-normal);
+}
+
+.emoji-item:hover {
+    transform: translateY(-2px);
+}
+
+.emoji-btn {
+    font-size: 28px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 16px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
+    min-width: 56px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: floatUp 0.6s ease-out;
+}
+
+.emoji-icon {
+    font-size: 28px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+}
+
+.emoji-btn.clicked .emoji-icon {
+    animation: emojiAnimate 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.emoji-btn:hover {
+    transform: scale(1.1) rotate(5deg) translateZ(10px);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+}
+
+.emoji-btn:active {
+    transform: scale(0.95) translateZ(5px);
+    box-shadow: 0 2px 6px rgba(255, 105, 180, 0.25);
+    transition: all 0.1s ease;
+}
+
+@keyframes emojiAnimate {
+    0% {
+        transform: scale(1) rotate(0deg) translateY(0);
+    }
+    25% {
+        transform: scale(1.15) rotate(3deg) translateY(-2px);
+    }
+    50% {
+        transform: scale(1.1) rotate(-3deg) translateY(1px);
+    }
+    75% {
+        transform: scale(1.12) rotate(2deg) translateY(-1px);
+    }
+    100% {
+        transform: scale(1) rotate(0deg) translateY(0);
+    }
+}
+
+@keyframes sparkle {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-20px) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-40px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+.sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.8);
+    animation: sparkle 0.8s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(20px) scale(0.5);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(-5px) scale(1.1);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.emoji-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    transition: all var(--transition-normal);
+}
+
+.emoji-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #c71585;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    text-align: center;
+    line-height: 1.2;
+    animation: fadeIn 0.4s ease-out;
+    transition: all var(--transition-normal);
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.emoji-btn:hover {
+    transform: scale(1.15) rotate(5deg) translateZ(10px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.emoji-picker {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.95);
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 10px 0;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.emoji-picker.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.emoji-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.emoji-picker-btn {
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-picker-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.emoji-picker-btn.selected {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.emoji-btn.selected {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(102, 126, 234, 0.7);
+    animation: bounce 0.6s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1.15) rotate(5deg) translateZ(10px);
+    }
+    50% {
+        transform: scale(1.2) rotate(-5deg) translateZ(15px);
+    }
+}
+
+.emoji-btn:active {
+    transform: scale(0.95) translateZ(0);
+    animation: pulse 0.4s ease;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.8);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 12px rgba(102, 126, 234, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    }
+}
+
+.emoji-btn.selected {
+    background: var(--primary-gradient);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.15) translateZ(15px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.6);
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.8) translateZ(0);
+    }
+    50% {
+        transform: scale(1.3) translateZ(20px);
+    }
+    100% {
+        transform: scale(1.15) translateZ(15px);
+    }
+}
+
+.emoji-btn.selected .emoji-label {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: labelPop 0.4s ease;
+}
+
+@keyframes labelPop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.emoji-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--transition-normal);
+}
+
+.emoji-item:hover {
+    transform: translateY(-2px);
+}
+
+textarea {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 18px;
+    font-size: 16px;
+    background: linear-gradient(135deg, white 0%, rgba(255, 240, 245, 0.8) 100%);
+    color: var(--text-primary);
+    resize: none;
+    min-height: 100px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.25);
+    transform: translateY(-1px);
+}
+
+.save-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.3);
+    margin-top: 16px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+}
+
+.save-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+    transition: all 0.1s ease;
+}
+
+.save-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    transform: scale(0);
+    transition: transform 0.6s ease;
+    z-index: -1;
+}
+
+.save-btn:hover::before {
+    transform: scale(1);
+}
+
+.food-section {
+    margin-bottom: 16px;
+}
+
+.food-input {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: nowrap;
+}
+
+.food-input input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
+    color: var(--text-primary);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    min-width: 0;
+}
+
+.food-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.food-input .emoji-btn {
+    flex: 0 0 auto;
+    min-width: 44px;
+    padding: 8px;
+}
+
+.add-btn {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    background: var(--success-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.add-btn:hover {
+    transform: scale(1.05);
+}
+
+#foodList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.food-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: var(--secondary-gradient);
+    border-radius: 20px;
+    font-size: 14px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.food-item .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    margin-left: 4px;
+}
+
+.photo-section {
+    margin-bottom: 16px;
+}
+
+.photo-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.25);
+}
+
+.photo-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.35);
+}
+
+.photo-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(255, 105, 180, 0.25);
+    transition: all 0.1s ease;
+}
+
+.photo-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.photo-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-item .delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    margin-bottom: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.calendar-btn,
+.export-btn {
+    padding: 8px 12px;
+    background: var(--secondary-gradient);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+}
+
+.calendar-btn:hover,
+.export-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-box {
+    margin-bottom: 16px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
+    color: var(--text-primary);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-item {
+    background: var(--secondary-gradient);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+}
+
+.history-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.edit-btn,
+.delete-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.edit-btn {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.edit-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-sm);
+}
+
+.delete-btn {
+    background: var(--danger-gradient);
+    color: white;
+}
+
+.delete-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-sm);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.history-date {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.history-mood {
+    font-size: 24px;
+}
+
+.history-activity {
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.history-foods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.history-food-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.history-photos {
+    display: flex;
+    gap: 8px;
+}
+
+.history-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.history-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-tertiary);
+}
+
+.empty-state .emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+#calendarModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#calendarModal.active {
+    display: flex;
+}
+
+.calendar-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.calendar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.close-calendar {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.calendar-nav-btn {
+    padding: 8px 12px;
+    background: var(--secondary-gradient);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.calendar-nav-btn:hover {
+    transform: scale(1.05);
+}
+
+.calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 8px 0;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    background: var(--secondary-gradient);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: 2px solid transparent;
+}
+
+.calendar-day:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-sm);
+}
+
+.calendar-day.other-month {
+    color: var(--text-tertiary);
+    opacity: 0.5;
+}
+
+.calendar-day.today {
+    border-color: var(--primary-color);
+    font-weight: 700;
+}
+
+.calendar-day.has-record {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.calendar-day.selected {
+    border-color: var(--success-color);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
+}
+
+.calendar-records {
+    border-top: 2px solid #e0e0e0;
+    padding-top: 16px;
+}
+
+.calendar-record-item {
+    background: var(--secondary-gradient);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.calendar-record-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.calendar-record-mood {
+    font-size: 20px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 2000;
+    opacity: 0;
+    transition: all var(--transition-normal);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 4px 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    min-width: 45px;
+    min-height: 42px;
+}
+
+.tab-item .tab-icon {
+    font-size: 14px;
+    transition: all var(--transition-normal);
+}
+
+.tab-item .tab-label {
+    font-size: 8px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    transition: all var(--transition-normal);
+}
+
+.tab-item.active {
+    background: var(--primary-gradient);
+}
+
+.tab-item.active .tab-icon {
+    transform: scale(1.1);
+}
+
+.tab-item.active .tab-label {
+    color: white;
+    font-weight: 600;
+}
+
+.tab-item:hover:not(.active) {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #c71585;
+    margin-top: 4px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+    letter-spacing: 0.5px;
+}
+
+.mood-stats {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+}
+
+.mood-stats-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #c71585;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.mood-bar-container {
+    margin-bottom: 12px;
+}
+
+.mood-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.mood-bar {
+    height: 24px;
+    background: var(--secondary-gradient);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mood-bar-fill {
+    height: 100%;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    color: white;
+    font-weight: 600;
+}
+
+.trend-chart {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 105, 180, 0.4);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+}
+
+.trend-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #c71585;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+}
+
+.trend-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    height: 120px;
+    padding: 0 8px;
+}
+
+.trend-bar {
+    flex: 1;
+    background: var(--primary-gradient);
+    border-radius: 8px 8px 0 0;
+    transition: height 0.5s ease;
+    position: relative;
+}
+
+.trend-bar:hover {
+    transform: scaleY(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.trend-bar-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.trend-bar-value {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--card-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* iPhone 15 Pro Max 专属适配 */
+@media (max-width: 430px) {
+    .container {
+        padding: 16px;
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+    
+    .section {
+        padding: 18px;
+    }
+    
+    .mood-category-emoji-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .emoji-btn {
+        font-size: 36px;
+        min-width: 65px;
+        padding: 14px;
+    }
+    
+    .emoji-label {
+        font-size: 12px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .tab-item {
+        min-width: 50px;
+        min-height: 45px;
+    }
+    
+    .tab-item .tab-icon {
+        font-size: 18px;
+    }
+    
+    .tab-item .tab-label {
+        font-size: 9px;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📝 生活记录</h1>
+    </header>
+    
+    <div class="container">
+        <div class="page active" id="page-home">
+            <div class="section">
+                <h3 class="mood-title">😊 心情</h3>
+                <div class="mood-category-container">
+                    <div class="mood-category-section">
+                        <div class="mood-category-title">基础情绪</div>
+                        <div class="mood-category-emoji-grid">
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="😊"><span class="emoji-icon">😊</span></button>
+                                <span class="emoji-label">开心</span>
+                            </div>
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="😴"><span class="emoji-icon">😴</span></button>
+                                <span class="emoji-label">疲惫</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mood-category-section">
+                        <div class="mood-category-title">积极情绪</div>
+                        <div class="mood-category-emoji-grid">
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="😃"><span class="emoji-icon">😃</span></button>
+                                <span class="emoji-label">兴奋</span>
+                            </div>
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="🥰"><span class="emoji-icon">🥰</span></button>
+                                <span class="emoji-label">爱</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mood-category-section">
+                        <div class="mood-category-title">消极情绪</div>
+                        <div class="mood-category-emoji-grid">
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="😢"><span class="emoji-icon">😢</span></button>
+                                <span class="emoji-label">难过</span>
+                            </div>
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="😠"><span class="emoji-icon">😠</span></button>
+                                <span class="emoji-label">生气</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mood-category-section">
+                        <div class="mood-category-title">特殊情绪</div>
+                        <div class="mood-category-emoji-grid">
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="😎"><span class="emoji-icon">😎</span></button>
+                                <span class="emoji-label">酷</span>
+                            </div>
+                            <div class="emoji-item">
+                                <button class="emoji-btn" data-emoji="🤔"><span class="emoji-icon">🤔</span></button>
+                                <span class="emoji-label">思考</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>💖 发生了什么呀！</h3>
+                <textarea id="activityInput" placeholder="今天发生了什么有趣的事情呢～"></textarea>
+                
+                <h3>📸 照片记录</h3>
+                <div class="photo-section">
+                    <input type="file" id="homePhotoInput" accept="image/*" capture="camera" multiple style="display: none;">
+                    <button class="photo-btn" onclick="document.getElementById('homePhotoInput').click()">📷 拍照/选择照片</button>
+                    <div class="photo-preview" id="homePhotoPreview"></div>
+                </div>
+                
+                <button class="save-btn" id="saveBtn">💖 保存记录</button>
+            </div>
+        </div>
+        
+        <div class="page" id="page-detail">
+            <div class="section">
+                <h2>📊 详细记录</h2>
+                
+                <h3>🍽️ 吃了什么</h3>
+                <div class="food-section">
+                    <div class="food-input">
+                        <input type="text" id="foodInput" placeholder="输入食物名称">
+                        <button class="emoji-btn" id="foodMoodBtn" data-emoji="😊">😊</button>
+                        <button class="add-btn" id="addFoodBtn">添加</button>
+                    </div>
+                    <div class="emoji-picker" id="foodEmojiPicker">
+                        <div class="emoji-picker-grid">
+                            <button class="emoji-picker-btn" data-emoji="😊">😊</button>
+                            <button class="emoji-picker-btn" data-emoji="😃">😃</button>
+                            <button class="emoji-picker-btn" data-emoji="😢">😢</button>
+                            <button class="emoji-picker-btn" data-emoji="😠">😠</button>
+                            <button class="emoji-picker-btn" data-emoji="😴">😴</button>
+                            <button class="emoji-picker-btn" data-emoji="😎">😎</button>
+                            <button class="emoji-picker-btn" data-emoji="🥰">🥰</button>
+                            <button class="emoji-picker-btn" data-emoji="🤔">🤔</button>
+                            <button class="emoji-picker-btn" data-emoji="😱">😱</button>
+                            <button class="emoji-picker-btn" data-emoji="🤩">🤩</button>
+                            <button class="emoji-picker-btn" data-emoji="😌">😌</button>
+                            <button class="emoji-picker-btn" data-emoji="😇">😇</button>
+                        </div>
+                    </div>
+                    <div id="foodList"></div>
+                </div>
+                
+                <h3>📸 照片</h3>
+                <div class="photo-section">
+                    <input type="file" id="photoInput" accept="image/*" capture="camera" multiple style="display: none;">
+                    <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📷 拍照/选择照片</button>
+                    <div class="photo-preview" id="photoPreview"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-history">
+            <div class="section">
+                <div class="section-header">
+                    <h2>📜 历史记录</h2>
+                    <div class="action-buttons">
+                        <button class="calendar-btn" id="calendarBtn">📅 日历</button>
+                        <button class="export-btn" id="exportBtn">📥 导出</button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜索记录...">
+                </div>
+                <div id="historyList"></div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRecords">0</div>
+                    <div class="stat-label">总记录数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="thisMonthRecords">0</div>
+                    <div class="stat-label">本月记录</div>
+                </div>
+            </div>
+            
+            <div class="mood-stats">
+                <h3 class="mood-stats-title">😊 心情分布</h3>
+                <div id="moodDistribution"></div>
+            </div>
+            
+            <div class="trend-chart">
+                <h3 class="trend-title">📈 月度趋势</h3>
+                <div class="trend-bars" id="monthlyTrend"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tabbar">
+        <div class="tab-item active" data-page="page-home">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">首页</span>
+        </div>
+        <div class="tab-item" data-page="page-detail">
+            <span class="tab-icon">🍴</span>
+            <span class="tab-label">详情</span>
+        </div>
+        <div class="tab-item" data-page="page-history">
+            <span class="tab-icon">📖</span>
+            <span class="tab-label">历史</span>
+        </div>
+        <div class="tab-item" data-page="page-stats">
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">统计</span>
+        </div>
+    </div>
+    
+    <div id="calendarModal">
+        <div class="calendar-content">
+            <div class="calendar-header">
+                <h3 class="calendar-title" id="calendarTitle">2024年 1月</h3>
+                <button class="close-calendar" id="closeCalendar">×</button>
+            </div>
+            <div class="calendar-nav">
+                <button class="calendar-nav-btn" id="prevMonth">◀ 上月</button>
+                <button class="calendar-nav-btn" id="todayBtn">今天</button>
+                <button class="calendar-nav-btn" id="nextMonth">下月 ▶</button>
+            </div>
+            <div class="calendar-days-header">
+                <div class="calendar-day-header">日</div>
+                <div class="calendar-day-header">一</div>
+                <div class="calendar-day-header">二</div>
+                <div class="calendar-day-header">三</div>
+                <div class="calendar-day-header">四</div>
+                <div class="calendar-day-header">五</div>
+                <div class="calendar-day-header">六</div>
+            </div>
+            <div class="calendar-days" id="calendarDays"></div>
+            <div class="calendar-records" id="calendarRecords"></div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+let selectedMood = '😊';
+let selectedFoodMood = '😊';
+let foodItems = [];
+let photoData = [];
+let homePhotoData = [];
+let selectedDate = new Date();
+let currentDate = new Date();
+let allRecords = [];
+let currentPage = 'page-home';
+
+function initDateInput() {
+    selectedDate = new Date();
+}
+
+function initMoodSelection() {
+    const allEmojiBtns = document.querySelectorAll('.mood-category-emoji-grid .emoji-btn');
+    allEmojiBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            allEmojiBtns.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedMood = this.dataset.emoji;
+            
+            // 添加点击动画效果
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 800);
+            
+            // 创建亮晶晶效果
+            createSparkles(this);
+        });
+    });
+    
+    allEmojiBtns[0].classList.add('selected');
+}
+
+function createSparkles(element) {
+    const rect = element.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const container = element.parentElement.parentElement;
+    const containerRect = container.getBoundingClientRect();
+    
+    // 创建8个亮晶晶
+    for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        
+        // 计算位置（相对于容器）
+        const x = (rect.left - containerRect.left) + rect.width / 2 + (Math.random() - 0.5) * rect.width;
+        const y = (rect.top - containerRect.top) + rect.height / 2 + (Math.random() - 0.5) * rect.height;
+        
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        
+        // 随机大小
+        const size = 6 + Math.random() * 6;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        
+        // 随机颜色
+        const colors = ['rgba(255, 255, 255, 0.9)', 'rgba(255, 215, 0, 0.9)', 'rgba(173, 216, 230, 0.9)'];
+        sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        container.appendChild(sparkle);
+        
+        // 动画结束后移除
+        setTimeout(() => {
+            sparkle.remove();
+        }, 800);
+    }
+}
+
+function initFoodMoodSelection() {
+    const foodMoodBtn = document.getElementById('foodMoodBtn');
+    const foodEmojiPicker = document.getElementById('foodEmojiPicker');
+    const emojiPickerBtns = document.querySelectorAll('.emoji-picker-btn');
+    
+    foodMoodBtn.addEventListener('click', function() {
+        foodEmojiPicker.classList.toggle('show');
+    });
+    
+    emojiPickerBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectedFoodMood = this.dataset.emoji;
+            foodMoodBtn.textContent = selectedFoodMood;
+            foodEmojiPicker.classList.remove('show');
+            
+            emojiPickerBtns.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+    
+    // 点击页面其他地方关闭表情选择器
+    document.addEventListener('click', function(e) {
+        if (!foodMoodBtn.contains(e.target) && !foodEmojiPicker.contains(e.target)) {
+            foodEmojiPicker.classList.remove('show');
+        }
+    });
+    
+    // 默认选中第一个表情
+    emojiPickerBtns[0].classList.add('selected');
+}
+
+function initAddFoodBtn() {
+    const addFoodBtn = document.getElementById('addFoodBtn');
+    const foodInput = document.getElementById('foodInput');
+    
+    addFoodBtn.addEventListener('click', function() {
+        const foodName = foodInput.value.trim();
+        if (foodName) {
+            foodItems.push({
+                name: foodName,
+                mood: selectedFoodMood
+            });
+            foodInput.value = '';
+            renderFoodList();
+        }
+    });
+    
+    foodInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addFoodBtn.click();
+        }
+    });
+}
+
+function renderFoodList() {
+    const foodList = document.getElementById('foodList');
+    foodList.innerHTML = '';
+    
+    foodItems.forEach((food, index) => {
+        const foodItem = document.createElement('div');
+        foodItem.className = 'food-item';
+        foodItem.innerHTML = `
+            ${food.name} ${food.mood}
+            <button class="delete-btn" onclick="deleteFood(${index})">×</button>
+        `;
+        foodList.appendChild(foodItem);
+    });
+}
+
+function deleteFood(index) {
+    foodItems.splice(index, 1);
+    renderFoodList();
+}
+
+function initPhotoInput() {
+    const photoInput = document.getElementById('photoInput');
+    
+    photoInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                photoData.push(event.target.result);
+                renderPhotoPreview();
+            };
+            reader.readAsDataURL(file);
+        });
+        photoInput.value = '';
+    });
+}
+
+function initHomePhotoInput() {
+    const photoInput = document.getElementById('homePhotoInput');
+    
+    photoInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                homePhotoData.push(event.target.result);
+                renderHomePhotoPreview();
+            };
+            reader.readAsDataURL(file);
+        });
+        photoInput.value = '';
+    });
+}
+
+function renderPhotoPreview() {
+    const photoPreview = document.getElementById('photoPreview');
+    photoPreview.innerHTML = '';
+    
+    photoData.forEach((photo, index) => {
+        const photoItem = document.createElement('div');
+        photoItem.className = 'photo-item';
+        photoItem.innerHTML = `
+            <img src="${photo}" alt="Photo">
+            <button class="delete-btn" onclick="deletePhoto(${index})">×</button>
+        `;
+        photoPreview.appendChild(photoItem);
+    });
+}
+
+function renderHomePhotoPreview() {
+    const photoPreview = document.getElementById('homePhotoPreview');
+    photoPreview.innerHTML = '';
+    
+    homePhotoData.forEach((photo, index) => {
+        const photoItem = document.createElement('div');
+        photoItem.className = 'photo-item';
+        photoItem.innerHTML = `
+            <img src="${photo}" alt="Photo">
+            <button class="delete-btn" onclick="deleteHomePhoto(${index})">×</button>
+        `;
+        photoPreview.appendChild(photoItem);
+    });
+}
+
+function deletePhoto(index) {
+    photoData.splice(index, 1);
+    renderPhotoPreview();
+}
+
+function deleteHomePhoto(index) {
+    homePhotoData.splice(index, 1);
+    renderHomePhotoPreview();
+}
+
+function initSaveBtn() {
+    const saveBtn = document.getElementById('saveBtn');
+    
+    saveBtn.addEventListener('click', function() {
+        const activityInput = document.getElementById('activityInput');
+        const activity = activityInput.value.trim();
+        
+        if (!activity && foodItems.length === 0 && photoData.length === 0) {
+            showToast('请至少记录一项内容！');
+            return;
+        }
+        
+        const record = {
+            id: Date.now(),
+            date: selectedDate.toISOString().split('T')[0],
+            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+            mood: selectedMood,
+            activity: activity,
+            foods: [...foodItems],
+            photos: [...photoData, ...homePhotoData]
+        };
+        
+        const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+        records.unshift(record);
+        localStorage.setItem('lifeRecords', JSON.stringify(records));
+        
+        resetForm();
+        loadHistory();
+        updateStats();
+        renderMoodStats();
+        renderMonthlyTrend();
+        showToast('✅ 记录保存成功！');
+    });
+}
+
+function resetForm() {
+    document.getElementById('activityInput').value = '';
+    foodItems = [];
+    photoData = [];
+    homePhotoData = [];
+    selectedMood = '😊';
+    selectedFoodMood = '😊';
+    
+    const allEmojiBtns = document.querySelectorAll('.mood-category-emoji-grid .emoji-btn');
+    allEmojiBtns.forEach(btn => btn.classList.remove('selected'));
+    allEmojiBtns[0].classList.add('selected');
+    
+    document.getElementById('foodMoodBtn').textContent = '😊';
+    
+    renderFoodList();
+    renderPhotoPreview();
+    renderHomePhotoPreview();
+}
+
+function initCalendar() {
+    const calendarBtn = document.getElementById('calendarBtn');
+    const calendarModal = document.getElementById('calendarModal');
+    const closeCalendar = document.getElementById('closeCalendar');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    const todayBtn = document.getElementById('todayBtn');
+    
+    calendarBtn.addEventListener('click', function() {
+        calendarModal.classList.add('active');
+        renderCalendar();
+    });
+    
+    closeCalendar.addEventListener('click', function() {
+        calendarModal.classList.remove('active');
+    });
+    
+    calendarModal.addEventListener('click', function(e) {
+        if (e.target === calendarModal) {
+            calendarModal.classList.remove('active');
+        }
+    });
+    
+    prevMonthBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+    });
+    
+    nextMonthBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+    });
+    
+    todayBtn.addEventListener('click', function() {
+        currentDate = new Date();
+        renderCalendar();
+    });
+}
+
+function renderCalendar() {
+    const calendarTitle = document.getElementById('calendarTitle');
+    const calendarDays = document.getElementById('calendarDays');
+    const calendarRecords = document.getElementById('calendarRecords');
+    
+    const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    calendarTitle.textContent = `${currentDate.getFullYear()}年 ${monthNames[currentDate.getMonth()]}`;
+    
+    calendarDays.innerHTML = '';
+    
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    for (let i = 0; i < 42; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        
+        const dayEl = document.createElement('button');
+        dayEl.className = 'calendar-day';
+        dayEl.textContent = date.getDate();
+        
+        if (date.getMonth() !== currentDate.getMonth()) {
+            dayEl.classList.add('other-month');
+        }
+        
+        const today = new Date();
+        if (date.getFullYear() === today.getFullYear() && 
+            date.getMonth() === today.getMonth() && 
+            date.getDate() === today.getDate()) {
+            dayEl.classList.add('today');
+        }
+        
+        const hasRecord = checkDateHasRecord(date);
+        if (hasRecord) {
+            dayEl.classList.add('has-record');
+        }
+        
+        dayEl.addEventListener('click', function() {
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+            dayEl.classList.add('selected');
+            showDateRecords(date);
+        });
+        
+        calendarDays.appendChild(dayEl);
+    }
+    
+    showDateRecords(new Date());
+}
+
+function checkDateHasRecord(date) {
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    const dateStr = date.toISOString().split('T')[0];
+    return records.some(record => record.date === dateStr);
+}
+
+function showDateRecords(date) {
+    const calendarRecords = document.getElementById('calendarRecords');
+    const dateStr = date.toISOString().split('T')[0];
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    const dateRecords = records.filter(record => record.date === dateStr);
+    
+    if (dateRecords.length === 0) {
+        calendarRecords.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: var(--text-tertiary);">
+                <p>这一天没有记录</p>
+            </div>
+        `;
+        return;
+    }
+    
+    calendarRecords.innerHTML = '';
+    
+    dateRecords.forEach((record, index) => {
+        const recordEl = document.createElement('div');
+        recordEl.className = 'calendar-record-item';
+        
+        let foodsHtml = '';
+        if (record.foods && record.foods.length > 0) {
+            foodsHtml = '<div style="margin-top: 8px; font-size: 14px;">';
+            record.foods.forEach(food => {
+                foodsHtml += `<div>${food.name} ${food.mood}</div>`;
+            });
+            foodsHtml += '</div>';
+        }
+        
+        let photosHtml = '';
+        if (record.photos && record.photos.length > 0) {
+            photosHtml = '<div style="margin-top: 8px; display: flex; gap: 8px;">';
+            record.photos.forEach(photo => {
+                photosHtml += `<img src="${photo}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;">`;
+            });
+            photosHtml += '</div>';
+        }
+        
+        recordEl.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="calendar-record-time">${record.time}</div>
+                <div class="calendar-record-mood">${record.mood}</div>
+            </div>
+            ${record.activity ? `<div style="margin-top: 8px; font-size: 14px;">${record.activity}</div>` : ''}
+            ${foodsHtml}
+            ${photosHtml}
+        `;
+        
+        calendarRecords.appendChild(recordEl);
+    });
+}
+
+function initSearch() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterHistory(searchTerm);
+    });
+}
+
+function filterHistory(searchTerm) {
+    const historyList = document.getElementById('historyList');
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    
+    if (!searchTerm) {
+        renderHistory(records);
+        return;
+    }
+    
+    const filteredRecords = records.filter(record => {
+        return record.activity?.toLowerCase().includes(searchTerm) ||
+               record.foods?.some(food => food.name.toLowerCase().includes(searchTerm));
+    });
+    
+    renderHistory(filteredRecords);
+}
+
+function initExport() {
+    const exportBtn = document.getElementById('exportBtn');
+    exportBtn.addEventListener('click', function() {
+        const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+        const dataStr = JSON.stringify(records, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `life-records-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast('✅ 数据导出成功！');
+    });
+}
+
+function initTabBar() {
+    const tabItems = document.querySelectorAll('.tab-item');
+    
+    tabItems.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetPage = this.dataset.page;
+            
+            tabItems.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(targetPage).classList.add('active');
+            
+            currentPage = targetPage;
+            
+            if (targetPage === 'page-stats') {
+                renderMoodStats();
+                renderMonthlyTrend();
+            }
+        });
+    });
+}
+
+function loadHistory() {
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    allRecords = records;
+    renderHistory(records);
+}
+
+function renderHistory(records) {
+    const historyList = document.getElementById('historyList');
+    
+    if (records.length === 0) {
+        historyList.innerHTML = `
+            <div class="empty-state">
+                <div class="emoji">📝</div>
+                <p>还没有历史记录</p>
+                <p>开始记录你的生活吧！</p>
+            </div>
+        `;
+        return;
+    }
+    
+    historyList.innerHTML = '';
+    
+    records.forEach((record, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.dataset.id = record.id;
+        
+        let foodsHtml = '';
+        if (record.foods && record.foods.length > 0) {
+            foodsHtml = '<div class="history-foods">';
+            record.foods.forEach(food => {
+                foodsHtml += `<div class="history-food-item">${food.name} ${food.mood}</div>`;
+            });
+            foodsHtml += '</div>';
+        }
+        
+        let photosHtml = '';
+        if (record.photos && record.photos.length > 0) {
+            photosHtml = '<div class="history-photos">';
+            record.photos.forEach(photo => {
+                photosHtml += `<div class="history-photo"><img src="${photo}" alt="Photo"></div>`;
+            });
+            photosHtml += '</div>';
+        }
+        
+        historyItem.innerHTML = `
+            <div class="history-header">
+                <div class="history-date">${record.date} ${record.time}</div>
+                <div class="history-mood">${record.mood}</div>
+            </div>
+            ${record.activity ? `<div class="history-activity">${record.activity}</div>` : ''}
+            ${foodsHtml}
+            ${photosHtml}
+            <div class="history-actions">
+                <button class="edit-btn" onclick="editRecord(${record.id})">✏️ 编辑</button>
+                <button class="delete-btn" onclick="deleteRecord(${record.id})">🗑️ 删除</button>
+            </div>
+        `;
+        
+        historyList.appendChild(historyItem);
+    });
+}
+
+function updateStats() {
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    
+    document.getElementById('totalRecords').textContent = records.length;
+    
+    const now = new Date();
+    const thisMonthRecords = records.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate.getMonth() === now.getMonth() && 
+               recordDate.getFullYear() === now.getFullYear();
+    });
+    document.getElementById('thisMonthRecords').textContent = thisMonthRecords.length;
+}
+
+function renderMoodStats() {
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    const moodDistribution = document.getElementById('moodDistribution');
+    
+    if (records.length === 0) {
+        moodDistribution.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: var(--text-tertiary);">
+                <p>暂无数据</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const moodCounts = {};
+    records.forEach(record => {
+        moodCounts[record.mood] = (moodCounts[record.mood] || 0) + 1;
+    });
+    
+    const total = records.length;
+    const sortedMoods = Object.entries(moodCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    moodDistribution.innerHTML = '';
+    sortedMoods.forEach(([mood, count]) => {
+        const percentage = ((count / total) * 100).toFixed(1);
+        const bar = document.createElement('div');
+        bar.className = 'mood-bar-container';
+        bar.innerHTML = `
+            <div class="mood-bar-label">
+                <span>${mood}</span>
+                <span>${count}次 (${percentage}%)</span>
+            </div>
+            <div class="mood-bar">
+                <div class="mood-bar-fill" style="width: ${percentage}%;">
+                    ${percentage}%
+                </div>
+            </div>
+        `;
+        moodDistribution.appendChild(bar);
+    });
+}
+
+function renderMonthlyTrend() {
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    const monthlyTrend = document.getElementById('monthlyTrend');
+    
+    if (records.length === 0) {
+        monthlyTrend.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: var(--text-tertiary);">
+                <p>暂无数据</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const monthlyCounts = {};
+    records.forEach(record => {
+        const month = record.date.substring(0, 7);
+        monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+    });
+    
+    const months = Object.keys(monthlyCounts).sort().slice(-6);
+    const maxCount = Math.max(...Object.values(monthlyCounts));
+    
+    monthlyTrend.innerHTML = '';
+    months.forEach(month => {
+        const count = monthlyCounts[month];
+        const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
+        const bar = document.createElement('div');
+        bar.className = 'trend-bar';
+        bar.style.height = `${height}%`;
+        bar.innerHTML = `
+            <div class="trend-bar-value">${count}</div>
+            <div class="trend-bar-label">${month}</div>
+        `;
+        monthlyTrend.appendChild(bar);
+    });
+}
+
+function editRecord(recordId) {
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    const record = records.find(r => r.id === recordId);
+    
+    if (!record) {
+        showToast('记录不存在！');
+        return;
+    }
+    
+    document.getElementById('dateInput').value = record.date;
+    selectedDate = new Date(record.date);
+    
+    document.getElementById('activityInput').value = record.activity || '';
+    
+    const allEmojiBtns = document.querySelectorAll('.mood-category-emoji-grid .emoji-btn');
+    allEmojiBtns.forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.dataset.emoji === record.mood) {
+            btn.classList.add('selected');
+        }
+    });
+    selectedMood = record.mood;
+    
+    foodItems = record.foods || [];
+    renderFoodList();
+    
+    photoData = record.photos || [];
+    renderPhotoPreview();
+    
+    const tabItems = document.querySelectorAll('.tab-item');
+    tabItems.forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-page="page-home"]').classList.add('active');
+    
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById('page-home').classList.add('active');
+    
+    currentPage = 'page-home';
+    
+    showToast('已加载记录到编辑区！');
+}
+
+function deleteRecord(recordId) {
+    if (!confirm('确定要删除这条记录吗？')) {
+        return;
+    }
+    
+    const records = JSON.parse(localStorage.getItem('lifeRecords') || '[]');
+    const filteredRecords = records.filter(r => r.id !== recordId);
+    localStorage.setItem('lifeRecords', JSON.stringify(filteredRecords));
+    
+    loadHistory();
+    updateStats();
+    renderMoodStats();
+    renderMonthlyTrend();
+    
+    showToast('✅ 记录已删除！');
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initDateInput();
+    initMoodSelection();
+    initFoodMoodSelection();
+    initAddFoodBtn();
+    initPhotoInput();
+    initHomePhotoInput();
+    initSaveBtn();
+    initCalendar();
+    initSearch();
+    initExport();
+    initTabBar();
+    
+    loadHistory();
+    updateStats();
+});
+    </script>
+</body>
+</html>
